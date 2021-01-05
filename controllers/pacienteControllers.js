@@ -22,3 +22,38 @@ exports.obtenerPacientes = async (req, res, next) => {
         next();
     }
 }
+
+//Obtiene un paciente en específico por ID
+exports.obtenerPaciente = async (req, res, next) => {
+    try {
+        const paciente = await Paciente.findById(req.params.id);
+        res.json(paciente);
+    } catch (error) {
+        console.log(error);
+        next();
+    }
+}
+
+//Actualiza un paciente en específico por ID
+exports.actualizarPaciente = async (req, res, next) => {
+    try {
+        const paciente = await Paciente.findOneAndUpdate({_id : req.params.id }, req.body, {
+            new: true
+        });
+        res.json(paciente);
+    } catch (error) {
+        console.log(error);
+        next();
+    }
+}
+
+//Elimina un paciente en específico por ID
+exports.eliminarPaciente = async (req, res, next) => {
+    try {
+        await Paciente.findOneAndDelete({_id : req.params.id })
+        res.json({mensaje: 'El paciente ha sido eliminado'});
+    } catch (error) {
+        console.log(error);
+        next();
+    }
+}
