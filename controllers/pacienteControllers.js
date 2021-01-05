@@ -1,5 +1,24 @@
+const Paciente = require('../models/Paciente');
+
 //Cuando se crea un nuevo cliente
-exports.nuevoCliente = (req, res, next) => {
+exports.nuevoCliente = async (req, res, next) => {
     //Insertar en BD
-    res.json({mensaje: 'El cliente se agregó correctamente'});
+    const paciente = new Paciente(req.body);
+    try {
+        await paciente.save();
+        res.json({mensaje: 'El cliente se agregó correctamente'});
+    } catch (error) {
+        console.log(error);
+        next();
+    } 
+}
+//Obtiene todos los pacientes
+exports.obtenerPacientes = async (req, res, next) => {
+    try {
+        const pacientes = await Paciente.find({});
+        res.json(pacientes);
+    } catch (error) {
+        console.log(error);
+        next();
+    }
 }
