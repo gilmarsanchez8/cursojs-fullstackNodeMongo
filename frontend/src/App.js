@@ -11,20 +11,25 @@ function App() {
 
   //State de la app
   const [citas, guardarCitas] = useState([]);
+  const [consultar, guardarConsultar] = useState(true);
   
   useEffect(() => {
-    const consultarAPI = () => {
-      clienteAxios.get('/pacientes')
-        .then(respuesta => {
-          guardarCitas(respuesta.data);
-        })
-        .catch(error => {
-          console.log(error)
-        })
+    if(consultar){
+      const consultarAPI = () => {
+        clienteAxios.get('/pacientes')
+          .then(respuesta => {
+            guardarCitas(respuesta.data);
+
+            guardarConsultar(false);
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
+      consultarAPI();
     }
-    consultarAPI();
    
-  }, []);
+  }, [consultar]);
 
   return (
     <Router>
@@ -32,17 +37,25 @@ function App() {
         <Route
           exact 
           patch="/"
-          component={() => <Pacientes citas={citas}/>}
+          component={() => <Pacientes citas={citas} guardarConsultar={guardarConsultar}/>}
         />
         <Route
           exact 
           patch="/nueva"
-          component={NuevaCita}
+          component={() => <NuevaCita guardarConsultar={guardarConsultar}/>}
         />
         <Route
           exact 
           patch="/cita/:id"
-          component={Cita}
+          render={(props) => {
+            const cita = citas.filter(cita => cita._id === props.match.params.id)
+            return(
+              <Cita 
+                cita={cita[0]}
+                guardarConsultar={guardarConsultar}
+              />
+            )
+          }}
         />
       </Switch>
     </Router>
